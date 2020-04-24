@@ -1,0 +1,23 @@
+---
+# Copy SSH public key to servers
+# Run first ssh-keygen -t rsa
+# Usage: ansible-playbook -i hosts -u ssh_username authorized_keys.yml --ask-pass
+# NOTE: Add this to $HOME/.ansible.cfg
+# [defaults]
+# host_key_checking = False
+# callback_whitelist = profile_tasks
+
+
+- hosts: all
+  strategy: free
+  #  gather_facts: false
+
+  vars:
+    id_rsa_pub: "~/.ssh/id_rsa.pub"
+
+  tasks:
+    - name: Set authorized key from file
+      authorized_key:
+        user: "{{ ansible_ssh_user }}"
+        state: present
+        key: "{{ lookup('file', '{{id_rsa_pub}}' ) }}"
